@@ -6,16 +6,9 @@ def parse_header(data):
 
 def parse_record(data):
     record_type_byte = data.read(1)
-    if record_type_byte == b'\x00':
-        record_type = 'debit'
-    elif record_type_byte == b'\x01':
-        record_type = 'credit'
-    elif record_type_byte == b'\x02':
-        record_type = 'start_autopay'
-    elif record_type_byte == b'\x03':
-        record_type = 'end_autopay'
-    else:
-        record_type = 'unknown'
+    record_type_mappings = {b'\x00': 'debit', 
+        b'\x01': 'credit', b'\x02': 'start_autopay', b'\x03': 'end_autopay'}
+    record_type = record_type_mappings.get(record_type_byte, 'unkown')
     timestamp = int.from_bytes(data.read(4), byteorder='big')
     user_id = int.from_bytes(data.read(8), byteorder='big')
     if record_type == 'debit' or record_type == 'credit':
